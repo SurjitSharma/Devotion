@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🙏 Devotional Travel - Live App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>🙏 Devotional Travel</h1>
+        <p>✨ Discover Sacred Temples Across India ✨</p>
+        <span class="live-badge">🔴 LIVE NOW</span>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Alert -->
+        <div id="alert" class="alert"></div>
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="number">10</div>
+                <div class="label">🛕 Sacred Temples</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">9</div>
+                <div class="label">🗺️ States Covered</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="avgRating">4.7</div>
+                <div class="label">⭐ Average Rating</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="totalBookings">0</div>
+                <div class="label">📅 Total Bookings</div>
+            </div>
+        </div>
+
+        <!-- Search Section -->
+        <div class="search-section">
+            <h2>🔍 Find Your Sacred Destination</h2>
+            <div class="search-grid">
+                <input type="text" id="searchInput" placeholder="Search temple name or city..." onkeyup="handleSearch()">
+                <select id="stateFilter" onchange="handleSearch()">
+                    <option value="">🌍 All States</option>
+                    <option value="Uttar Pradesh">Uttar Pradesh</option>
+                    <option value="Uttarakhand">Uttarakhand</option>
+                    <option value="Gujarat">Gujarat</option>
+                    <option value="Odisha">Odisha</option>
+                    <option value="Andhra Pradesh">Andhra Pradesh</option>
+                    <option value="Tamil Nadu">Tamil Nadu</option>
+                    <option value="Assam">Assam</option>
+                    <option value="Madhya Pradesh">Madhya Pradesh</option>
+                    <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+                </select>
+                <button class="search-btn" onclick="handleSearch()">🔎 Search</button>
+            </div>
+        </div>
+
+        <!-- Temples Grid -->
+        <div class="temples-grid" id="templesGrid"></div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeBookingModal()">&times;</span>
+            <h2>📅 Book Your Temple Visit</h2>
+            <div id="modalAlert" class="alert"></div>
+            <form id="bookingForm" onsubmit="submitBooking(event)">
+                <div class="form-group">
+                    <label>👤 Your Name:</label>
+                    <input type="text" id="visitorName" placeholder="Enter your name" required>
+                </div>
+                <div class="form-group">
+                    <label>📧 Email:</label>
+                    <input type="email" id="visitorEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label>📱 Phone:</label>
+                    <input type="tel" id="visitorPhone" placeholder="Enter your phone" required>
+                </div>
+                <div class="form-group">
+                    <label>📆 Visit Date:</label>
+                    <input type="date" id="visitDate" required>
+                </div>
+                <div class="form-group">
+                    <label>👥 Number of People:</label>
+                    <input type="number" id="numberOfPeople" min="1" value="1" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 20px;">✅ Confirm Booking</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>🚀 <strong>Devotional Travel - Live Web Application</strong></p>
+        <p>✨ 10 Sacred Temples | Real-time Bookings | 100% Free ✨</p>
+        <p>🙏 Made with love for spiritual seekers 🙏</p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
