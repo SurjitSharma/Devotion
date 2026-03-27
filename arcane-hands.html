@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✦ Arcane Hands ✦</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #020408;
+  overflow: hidden;
+  font-family: 'Cinzel', serif;
+  color: #c9a96e;
+  height: 100vh;
+}
+
+#main-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 1;
+}
+
+#video {
+  position: fixed;
+  bottom: 24px; right: 24px;
+  width: 190px; height: 140px;
+  border-radius: 12px;
+  border: 1px solid #c9a96e33;
+  opacity: 0.45;
+  transform: scaleX(-1);
+  object-fit: cover;
+  z-index: 20;
+  box-shadow: 0 0 30px #c9a96e11;
+}
+
+#ui {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  padding: 28px 40px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+  pointer-events: none;
+}
+
+h1 {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  letter-spacing: 0.35em;
+  color: #c9a96e;
+  text-shadow: 0 0 40px #c9a96e99, 0 0 80px #c9a96e44;
+  margin-bottom: 10px;
+}
+
+#subtitle {
+  font-size: 0.65rem;
+  letter-spacing: 0.5em;
+  color: #c9a96e55;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+#gesture-display {
+  font-size: 0.85rem;
+  letter-spacing: 0.25em;
+  color: #8bb4e8;
+  text-shadow: 0 0 20px #8bb4e899;
+  min-height: 22px;
+  text-transform: uppercase;
+  transition: color 0.3s ease;
+}
+
+#gesture-guide {
+  position: fixed;
+  bottom: 24px; left: 24px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.g-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: #c9a96e66;
+  text-transform: uppercase;
+}
+
+.g-icon {
+  font-size: 1.1rem;
+  width: 24px;
+  text-align: center;
+}
+
+.g-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+#status-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 30;
+  pointer-events: none;
+}
+
+#status-msg {
+  font-size: 0.85rem;
+  letter-spacing: 0.3em;
+  color: #c9a96e55;
+  text-align: center;
+  line-height: 2;
+}
+
+.arcane-divider {
+  color: #c9a96e33;
+  font-size: 0.7rem;
+  letter-spacing: 0.5em;
+  margin: 6px 0;
+}
+
+/* Decorative corners */
+.corner {
+  position: fixed;
+  z-index: 10;
+  width: 50px; height: 50px;
+  pointer-events: none;
+  opacity: 0.4;
+}
+.corner-tl { top: 16px; left: 16px; border-top: 1px solid #c9a96e; border-left: 1px solid #c9a96e; }
+.corner-tr { top: 16px; right: 16px; border-top: 1px solid #c9a96e; border-right: 1px solid #c9a96e; }
+.corner-bl { bottom: 16px; left: 16px; border-bottom: 1px solid #c9a96e; border-left: 1px solid #c9a96e; }
+.corner-br { bottom: 16px; right: 16px; border-bottom: 1px solid #c9a96e; border-right: 1px solid #c9a96e; }
+</style>
+</head>
+<body>
+
+<canvas id="main-canvas"></canvas>
+<video id="video" autoplay playsinline muted></video>
+
+<div class="corner corner-tl"></div>
+<div class="corner corner-tr"></div>
+<div class="corner corner-bl"></div>
+<div class="corner corner-br"></div>
+
+<div id="ui">
+  <h1>✦ ARCANE HANDS ✦</h1>
+  <div id="subtitle">a gesture sanctum</div>
+  <div class="arcane-divider">— ✦ —</div>
+  <div id="gesture-display">awaiting the gift of sight…</div>
+</div>
+
+<div id="gesture-guide">
+  <div class="g-item"><span class="g-dot" style="background:#ffd700"></span><span class="g-icon">🖐</span><span>Open Palm — Starfall</span></div>
+  <div class="g-item"><span class="g-dot" style="background:#9040ff"></span><span class="g-icon">✊</span><span>Fist — Dark Vortex</span></div>
+  <div class="g-item"><span class="g-dot" style="background:#40aaff"></span><span class="g-icon">☝️</span><span>Point — Lightning</span></div>
+  <div class="g-item"><span class="g-dot" style="background:#40ffee"></span><span class="g-icon">✌️</span><span>Peace — Crystal Storm</span></div>
+  <div class="g-item"><span class="g-dot" style="background:#ff88ff"></span><span class="g-icon">🤏</span><span>Pinch — Conjure Orb</span></div>
+</div>
+
+<div id="status-overlay">
+  <div id="status-msg">Allow camera access to begin casting spells<br>▸ position your hand before the lens</div>
+</div>
+
+<!-- MediaPipe -->
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+
+<script>
+const canvas = document.getElementById('main-canvas');
+const ctx = canvas.getContext('2d');
+const video = document.getElementById('video');
+const gestureDisplay = document.getElementById('gesture-display');
+const statusOverlay = document.getElementById('status-overlay');
+const statusMsg = document.getElementById('status-msg');
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  generateStars();
+});
+
+// ── AMBIENT STARS ────────────────────────────────────────
+let stars = [];
+function generateStars() {
+  stars = [];
+  for (let i = 0; i < 200; i++) {
+    stars.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      size: Math.random() * 1.4 + 0.2,
+      phase: Math.random() * Math.PI * 2,
+      speed: Math.random() * 0.012 + 0.004,
+      maxOp: Math.random() * 0.5 + 0.1
+    });
+  }
+}
+generateStars();
+
+// ── PARTICLE CLASS ────────────────────────────────────────
+class Particle {
+  constructor(x, y, type) {
+    this.x = x;
+    this.y = y;
+    this.type = type;
+    this.life = 1;
+
+    if (type === 'star') {
+      this.decay = Math.random() * 0.018 + 0.005;
+      this.vx = (Math.random() - 0.5) * 9;
+      this.vy = (Math.random() - 0.5) * 9 - Math.random() * 3;
+      this.size = Math.random() * 4 + 1.5;
+      this.hue = Math.random() * 55 + 30;
+      this.gravity = 0.08;
+    } else if (type === 'vortex') {
+      this.decay = Math.random() * 0.015 + 0.005;
+      const angle = Math.random() * Math.PI * 2;
+      const spd = Math.random() * 4 + 1;
+      this.centerX = x; this.centerY = y;
+      this.angle = angle;
+      this.radius = spd * 12;
+      this.angularVel = (Math.random() * 0.09 + 0.04) * (Math.random() > 0.5 ? 1 : -1);
+      this.size = Math.random() * 6 + 2;
+      this.hue = Math.random() * 60 + 250;
+    } else if (type === 'crystal') {
+      this.decay = Math.random() * 0.016 + 0.004;
+      this.vx = (Math.random() - 0.5) * 4;
+      this.vy = -Math.random() * 7 - 2;
+      this.size = Math.random() * 10 + 4;
+      this.hue = Math.random() * 40 + 175;
+      this.gravity = 0.06;
+      this.rotation = Math.random() * Math.PI;
+      this.rotSpeed = (Math.random() - 0.5) * 0.12;
+    } else if (type === 'ember') {
+      this.decay = Math.random() * 0.03 + 0.012;
+      this.vx = (Math.random() - 0.5) * 14;
+      this.vy = (Math.random() - 0.5) * 14;
+      this.size = Math.random() * 3.5 + 1;
+      this.hue = Math.random() * 25 + 10;
+      this.gravity = 0.18;
+    }
+  }
+
+  update() {
+    this.life -= this.decay;
+    if (this.type === 'vortex') {
+      this.angle += this.angularVel;
+      this.radius *= 0.975;
+      this.x = this.centerX + Math.cos(this.angle) * this.radius;
+      this.y = this.centerY + Math.sin(this.angle) * this.radius;
+    } else {
+      this.x += this.vx;
+      this.y += this.vy;
+      if (this.gravity) this.vy += this.gravity;
+      this.vx *= 0.985;
+    }
+    if (this.type === 'crystal') this.rotation += this.rotSpeed;
+  }
+
+  draw() {
+    if (this.life <= 0) return;
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, this.life);
+
+    if (this.type === 'crystal') {
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.rotation);
+      const c = `hsl(${this.hue},100%,80%)`;
+      ctx.shadowColor = c; ctx.shadowBlur = 18;
+      ctx.strokeStyle = c; ctx.lineWidth = 1.5;
+      ctx.fillStyle = `hsla(${this.hue},100%,80%,0.3)`;
+      ctx.beginPath();
+      ctx.moveTo(0, -this.size);
+      ctx.lineTo(this.size * 0.55, 0);
+      ctx.lineTo(0, this.size);
+      ctx.lineTo(-this.size * 0.55, 0);
+      ctx.closePath();
+      ctx.fill(); ctx.stroke();
+      // Inner cross
+      ctx.strokeStyle = `hsla(${this.hue},100%,95%,0.6)`;
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(0, -this.size * 0.6); ctx.lineTo(0, this.size * 0.6);
+      ctx.moveTo(-this.size * 0.3, 0); ctx.lineTo(this.size * 0.3, 0);
+      ctx.stroke();
+    } else if (this.type === 'vortex') {
+      const c = `hsl(${this.hue},80%,65%)`;
+      ctx.fillStyle = c;
+      ctx.shadowColor = c; ctx.shadowBlur = 22;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size * this.life, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      const c = `hsl(${this.hue},100%,78%)`;
+      ctx.fillStyle = c;
+      ctx.shadowColor = c; ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size * this.life, 0, Math.PI * 2);
+      ctx.fill();
+      if (this.type === 'star' && this.life > 0.4) {
+        ctx.strokeStyle = c; ctx.lineWidth = 0.8;
+        const s = this.size * 3.5;
+        ctx.beginPath();
+        ctx.moveTo(this.x - s, this.y); ctx.lineTo(this.x + s, this.y);
+        ctx.moveTo(this.x, this.y - s); ctx.lineTo(this.x, this.y + s);
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
+  }
+}
+
+// ── LIGHTNING CLASS ───────────────────────────────────────
+class Lightning {
+  constructor(x, y) {
+    this.life = 1;
+    this.segments = this.generate(x, y);
+  }
+  generate(x, y) {
+    const segs = [];
+    let cx = x, cy = y;
+    for (let i = 0; i < 9; i++) {
+      const angle = -Math.PI / 2 + (Math.random() - 0.5) * 1.6;
+      const len = Math.random() * 65 + 35;
+      const nx = cx + Math.cos(angle) * len;
+      const ny = cy + Math.sin(angle) * len;
+      segs.push({ x1: cx, y1: cy, x2: nx, y2: ny, branch: false });
+      if (Math.random() > 0.55) {
+        const ba = angle + (Math.random() - 0.5) * 2.2;
+        const bl = len * 0.55;
+        segs.push({ x1: cx, y1: cy, x2: cx + Math.cos(ba) * bl, y2: cy + Math.sin(ba) * bl, branch: true });
+      }
+      cx = nx; cy = ny;
+    }
+    return segs;
+  }
+  update() { this.life -= 0.09; }
+  draw() {
+    ctx.save();
+    ctx.globalAlpha = this.life * this.life;
+    this.segments.forEach(s => {
+      ctx.strokeStyle = s.branch ? '#a8d8ff' : '#ffffff';
+      ctx.shadowColor = '#60b0ff';
+      ctx.shadowBlur = s.branch ? 12 : 30;
+      ctx.lineWidth = s.branch ? 1 : 2.5;
+      ctx.beginPath();
+      ctx.moveTo(s.x1, s.y1);
+      ctx.lineTo(s.x2, s.y2);
+      ctx.stroke();
+    });
+    // Glow dot at origin
+    if (!this._origin_drawn) {
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = '#80c8ff';
+      ctx.shadowBlur = 40;
+      ctx.beginPath();
+      ctx.arc(this.segments[0].x1, this.segments[0].y1, 8, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+}
+
+// ── MAGIC ORB CLASS ───────────────────────────────────────
+class MagicOrb {
+  constructor(x, y) {
+    this.x = x; this.y = y;
+    this.life = 1;
+    this.radius = 4;
+    this.maxR = 55;
+    this.growing = true;
+    this.hue = 220;
+    this.trail = [];
+  }
+  update(x, y) {
+    this.trail.push({ x: this.x, y: this.y, life: 1 });
+    if (this.trail.length > 20) this.trail.shift();
+    this.trail.forEach(t => t.life -= 0.08);
+    this.x = x; this.y = y;
+    if (this.growing) {
+      this.radius = Math.min(this.radius + 2.5, this.maxR);
+      if (this.radius >= this.maxR) this.growing = false;
+    }
+    this.hue = (this.hue + 1.5) % 360;
+  }
+  draw() {
+    ctx.save();
+    // Trail
+    this.trail.forEach(t => {
+      if (t.life <= 0) return;
+      ctx.globalAlpha = t.life * 0.3;
+      ctx.fillStyle = `hsl(${this.hue}, 100%, 70%)`;
+      ctx.shadowColor = `hsl(${this.hue}, 100%, 70%)`;
+      ctx.shadowBlur = 15;
+      ctx.beginPath();
+      ctx.arc(t.x, t.y, 6 * t.life, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.globalAlpha = this.life;
+    // Core orb
+    const grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
+    grad.addColorStop(0, `hsla(${this.hue}, 100%, 95%, 0.95)`);
+    grad.addColorStop(0.35, `hsla(${this.hue}, 100%, 75%, 0.65)`);
+    grad.addColorStop(1, `hsla(${this.hue}, 100%, 55%, 0)`);
+    ctx.fillStyle = grad;
+    ctx.shadowColor = `hsl(${this.hue}, 100%, 70%)`;
+    ctx.shadowBlur = 40;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    ctx.fill();
+    // Ring
+    ctx.strokeStyle = `hsla(${(this.hue + 40) % 360}, 100%, 80%, 0.6)`;
+    ctx.shadowBlur = 20;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius + 8, 0, Math.PI * 2);
+    ctx.stroke();
+    // Orbiting sparks
+    const t = Date.now() / 600;
+    for (let i = 0; i < 4; i++) {
+      const a = t + (i * Math.PI / 2);
+      const px = this.x + Math.cos(a) * (this.radius + 14);
+      const py = this.y + Math.sin(a) * (this.radius + 14);
+      ctx.fillStyle = `hsl(${(this.hue + i * 30) % 360}, 100%, 85%)`;
+      ctx.shadowColor = ctx.fillStyle;
+      ctx.shadowBlur = 18;
+      ctx.beginPath();
+      ctx.arc(px, py, 4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+}
+
+// ── HAND SKELETON DRAWING ─────────────────────────────────
+const CONNECTIONS = [
+  [0,1],[1,2],[2,3],[3,4],
+  [0,5],[5,6],[6,7],[7,8],
+  [5,9],[9,10],[10,11],[11,12],
+  [9,13],[13,14],[14,15],[15,16],
+  [13,17],[17,18],[18,19],[19,20],
+  [0,17]
+];
+const TIPS = new Set([4, 8, 12, 16, 20]);
+
+function drawHand(lm) {
+  const w = canvas.width, h = canvas.height;
+  ctx.save();
+  CONNECTIONS.forEach(([a, b]) => {
+    const ax = (1 - lm[a].x) * w, ay = lm[a].y * h;
+    const bx = (1 - lm[b].x) * w, by = lm[b].y * h;
+    ctx.strokeStyle = 'rgba(201,169,110,0.35)';
+    ctx.shadowColor = '#c9a96e';
+    ctx.shadowBlur = 8;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(ax, ay);
+    ctx.lineTo(bx, by);
+    ctx.stroke();
+  });
+  lm.forEach((l, i) => {
+    const x = (1 - l.x) * w, y = l.y * h;
+    const tip = TIPS.has(i);
+    ctx.fillStyle = tip ? '#ffffff' : '#c9a96e';
+    ctx.shadowColor = tip ? '#fffbe0' : '#c9a96e';
+    ctx.shadowBlur = tip ? 22 : 10;
+    ctx.beginPath();
+    ctx.arc(x, y, tip ? 6 : 3.5, 0, Math.PI * 2);
+    ctx.fill();
+  });
+  ctx.restore();
+}
+
+// ── GESTURE DETECTION ─────────────────────────────────────
+function detectGesture(lm) {
+  const extended = (tip, pip) => lm[tip].y < lm[pip].y;
+  const index  = extended(8, 6);
+  const middle = extended(12, 10);
+  const ring   = extended(16, 14);
+  const pinky  = extended(20, 18);
+  const dx = lm[4].x - lm[8].x;
+  const dy = lm[4].y - lm[8].y;
+  if (Math.sqrt(dx*dx + dy*dy) < 0.065) return 'pinch';
+  if (index && middle && ring && pinky) return 'open';
+  if (!index && !middle && !ring && !pinky) return 'fist';
+  if (index && !middle && !ring && !pinky) return 'point';
+  if (index && middle && !ring && !pinky) return 'peace';
+  return 'unknown';
+}
+
+// ── STATE ─────────────────────────────────────────────────
+let particles = [], lightnings = [], orb = null;
+let currentLandmarks = null, currentGesture = 'unknown';
+let lastSparkTime = 0;
+
+const GESTURE_META = {
+  open:    { label: '✦ STARFALL ✦',          color: '#ffd700' },
+  fist:    { label: '✦ DARK VORTEX ✦',       color: '#9040ff' },
+  point:   { label: '✦ LIGHTNING STRIKE ✦',  color: '#40aaff' },
+  peace:   { label: '✦ CRYSTAL STORM ✦',     color: '#40ffee' },
+  pinch:   { label: '✦ ORB CONJURED ✦',      color: '#ff88ff' },
+  unknown: { label: '· raise your hand to cast ·', color: '#8bb4e8' }
+};
+
+function spawnEffect(gesture, x, y) {
+  const now = Date.now();
+  if (gesture === 'open') {
+    if (now - lastSparkTime > 60) {
+      for (let i = 0; i < 14; i++) particles.push(new Particle(x, y, 'star'));
+      lastSparkTime = now;
+    }
+  } else if (gesture === 'fist') {
+    if (now - lastSparkTime > 40) {
+      for (let i = 0; i < 20; i++) particles.push(new Particle(x, y, 'vortex'));
+      lastSparkTime = now;
+    }
+  } else if (gesture === 'point') {
+    if (now - lastSparkTime > 280) {
+      lightnings.push(new Lightning(x, y));
+      for (let i = 0; i < 10; i++) particles.push(new Particle(x, y, 'ember'));
+      lastSparkTime = now;
+    }
+  } else if (gesture === 'peace') {
+    if (now - lastSparkTime > 80) {
+      for (let i = 0; i < 6; i++) particles.push(new Particle(x, y, 'crystal'));
+      lastSparkTime = now;
+    }
+  } else if (gesture === 'pinch') {
+    if (!orb) orb = new MagicOrb(x, y);
+    else orb.update(x, y);
+  }
+  if (gesture !== 'pinch') orb = null;
+}
+
+// ── DRAW RUNE BORDER ──────────────────────────────────────
+const RUNES = '᚛ᚑᚊᚋᚌᚍᚎᚏ᚜';
+function drawRuneBorder() {
+  ctx.save();
+  ctx.font = '11px serif';
+  ctx.fillStyle = 'rgba(201,169,110,0.12)';
+  const step = 40;
+  const w = canvas.width, h = canvas.height;
+  let ri = 0;
+  for (let x = step; x < w; x += step) {
+    ctx.fillText(RUNES[ri % RUNES.length], x, 12);
+    ctx.fillText(RUNES[(ri + 5) % RUNES.length], x, h - 4);
+    ri++;
+  }
+  for (let y = step; y < h; y += step) {
+    ctx.fillText(RUNES[ri % RUNES.length], 4, y);
+    ctx.fillText(RUNES[(ri + 3) % RUNES.length], w - 14, y);
+    ri++;
+  }
+  ctx.restore();
+}
+
+// ── ANIMATE ───────────────────────────────────────────────
+let frameCount = 0;
+function animate() {
+  requestAnimationFrame(animate);
+  frameCount++;
+
+  const w = canvas.width, h = canvas.height;
+  ctx.fillStyle = 'rgba(2,4,8,0.16)';
+  ctx.fillRect(0, 0, w, h);
+
+  // Ambient stars
+  stars.forEach(s => {
+    const op = ((Math.sin(s.phase + frameCount * s.speed) + 1) / 2) * s.maxOp;
+    ctx.fillStyle = `rgba(180,160,100,${op})`;
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Rune border (every 3 frames)
+  if (frameCount % 3 === 0) drawRuneBorder();
+
+  if (currentLandmarks) {
+    const lm = currentLandmarks;
+    const palmX = (1 - lm[9].x) * w;
+    const palmY = lm[9].y * h;
+
+    // Aura
+    const meta = GESTURE_META[currentGesture] || GESTURE_META.unknown;
+    const auraGrad = ctx.createRadialGradient(palmX, palmY, 0, palmX, palmY, 150);
+    auraGrad.addColorStop(0, meta.color + '18');
+    auraGrad.addColorStop(1, 'transparent');
+    ctx.fillStyle = auraGrad;
+    ctx.beginPath();
+    ctx.arc(palmX, palmY, 150, 0, Math.PI * 2);
+    ctx.fill();
+
+    drawHand(lm);
+    spawnEffect(currentGesture, palmX, palmY);
+
+    // Label above hand
+    if (currentGesture !== 'unknown') {
+      ctx.save();
+      ctx.font = '600 11px Cinzel, serif';
+      ctx.fillStyle = meta.color;
+      ctx.shadowColor = meta.color;
+      ctx.shadowBlur = 20;
+      ctx.textAlign = 'center';
+      ctx.globalAlpha = 0.9;
+      ctx.fillText(meta.label, palmX, palmY - 150);
+      ctx.restore();
+    }
+  }
+
+  // Orb
+  if (orb) { if (orb.life > 0) orb.draw(); else orb = null; }
+
+  // Particles
+  particles = particles.filter(p => p.life > 0);
+  particles.forEach(p => { p.update(); p.draw(); });
+
+  // Lightning
+  lightnings = lightnings.filter(l => l.life > 0);
+  lightnings.forEach(l => { l.update(); l.draw(); });
+}
+
+animate();
+
+// ── MEDIAPIPE SETUP ───────────────────────────────────────
+const hands = new Hands({
+  locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`
+});
+
+hands.setOptions({
+  maxNumHands: 1,
+  modelComplexity: 1,
+  minDetectionConfidence: 0.72,
+  minTrackingConfidence: 0.55
+});
+
+hands.onResults(results => {
+  statusOverlay.style.display = 'none';
+
+  if (results.multiHandLandmarks?.length > 0) {
+    currentLandmarks = results.multiHandLandmarks[0];
+    currentGesture = detectGesture(currentLandmarks);
+    const meta = GESTURE_META[currentGesture] || GESTURE_META.unknown;
+    gestureDisplay.textContent = meta.label;
+    gestureDisplay.style.color = meta.color;
+    gestureDisplay.style.textShadow = `0 0 20px ${meta.color}88`;
+  } else {
+    currentLandmarks = null;
+    currentGesture = 'unknown';
+    gestureDisplay.textContent = '· raise your hand to cast ·';
+    gestureDisplay.style.color = '#8bb4e8';
+    gestureDisplay.style.textShadow = '0 0 20px #8bb4e888';
+  }
+});
+
+const camera = new Camera(video, {
+  onFrame: async () => { await hands.send({ image: video }); },
+  width: 640,
+  height: 480
+});
+
+camera.start().catch(() => {
+  statusMsg.innerHTML = '⚠ Camera access denied<br>Enable camera permissions and reload';
+  statusMsg.style.color = '#ff6644aa';
+});
+</script>
+</body>
+</html>
